@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+
+  qrpcapi:
+    build:
+      context: ./
+    ports:
+      - "50051:50051"
+      - "443:443"
+    networks:
+      - bridged
+    environment:
+      - DEBUGGING=true
+
+networks:
+  bridged:
+    driver: bridge
+
+volumes:
+  vedbjorn-rest:
+

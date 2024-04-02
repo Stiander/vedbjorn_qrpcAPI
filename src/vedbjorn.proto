@@ -1,0 +1,442 @@
+syntax = "proto3";
+
+package vedbjorn;
+
+
+service VedbjornFunctions {
+
+  rpc GetPrices(Nothing) returns (AllPrices) {}
+  rpc SetPrices(AllPrices) returns (GeneralInfoMessage) {}
+
+  rpc CoordinateToLocation (Coordinate) returns (Location) {}
+  rpc NameToLocation (GeneralInfoMessage) returns (Location) {}
+  rpc LocationToGraph(Coordinate) returns (Location) {}
+  rpc FindCoordinatesInAddress(Location) returns (Location) {}
+  rpc GetMarketInfo(Location) returns (MarketInfo) {}
+
+  rpc GetUser (UserContactInfo) returns (User) {}
+  rpc CreateUser(User) returns (GeneralInfoMessage) {}
+  rpc DeleteUser (UserContactInfo) returns (GeneralInfoMessage) {}
+  rpc VerifyUserEmailStart (UserContactInfo) returns (GeneralInfoMessage) {}
+  rpc VerifyUserEmail(EmailVerificationCode) returns (GeneralInfoMessage) {}
+
+  rpc BuyRequestToUser(BuyRequest) returns (GeneralInfoMessage) {}
+  rpc GetBuyRequest(UserContactInfo) returns (BuyRequest) {}
+  rpc GetBuyRequestMatch(UserContactInfo) returns (GeneralInfoMessage) {}
+  rpc DeleteBuyRequest(UserContactInfo) returns (GeneralInfoMessage) {}
+
+  rpc SellRequestToUser(SellRequest) returns (GeneralInfoMessage) {}
+  rpc GetSellRequest(UserContactInfo) returns (SellRequest) {}
+  rpc DeleteSellRequest(UserContactInfo) returns (GeneralInfoMessage) {}
+  rpc GetNewSellerDealInfoList(UserContactInfo) returns (SellerDealInfoList) {}
+  rpc GetOngoingSellerDealInfoList(UserContactInfo) returns (SellerDealInfoList) {}
+  rpc GetCompletedSells(UserContactInfo) returns (SellerDealInfoList) {}
+  rpc GetNewSellerDealAccept(SellerDealAccept) returns (GeneralInfoMessage) {}
+
+  rpc DriveRequestToUser(DriveRequest) returns (GeneralInfoMessage) {}
+  rpc GetDriveRequest(UserContactInfo) returns (DriveRequest) {}
+  rpc DeleteDriveRequest(UserContactInfo) returns (GeneralInfoMessage) {}
+  rpc SetDriverNotAvailable(UserContactInfo) returns (GeneralInfoMessage) {}
+
+  rpc ShortCountryInfo(Name) returns (Counties) {}
+
+  rpc NotifyDriverOnNewMission(Name) returns (GeneralInfoMessage) {}
+  rpc GetPlannedRoute(Name) returns (Routes) {}
+  rpc SetAcceptPlannedRoute(GeneralInfoMessage) returns (GeneralInfoMessage) {}
+
+  rpc GetOngoingRoute(Name) returns (Routes) {}
+  rpc GetCompletedRoutes(Name) returns (RoutesList) {}
+
+  rpc PushVisit(VisitProof) returns (GeneralInfoMessage) {}
+  rpc GetVisit(VisitIndex) returns (VisitProof) {}
+  rpc GetDeliveryProof(Name) returns (VisitProof) {}
+
+  rpc PushFeedbackComplaintNondelivery(FeedbackComplaintNondelivery) returns (GeneralInfoMessage) {}
+  rpc GetMessages(MessageQuery) returns (Messages) {}
+  rpc GetBuyRequestNotification(MessageQuery) returns (Message) {}
+
+  rpc PushFeedbackAcceptDelivery(MessageQuery) returns (GeneralInfoMessage) {}
+  rpc PushFeedbackRejectDelivery(FeedbackRejectDelivery) returns (GeneralInfoMessage) {}
+  rpc GetAllCompletedDeliveryInfoForBuyer(MessageQuery) returns (AllCompletedDeliveryInfoForBuyer) {}
+  rpc GetAllCompletedDeliveryInfoForBuyerAdm(MessageQuery) returns (AllCompletedDeliveryInfoForBuyer) {}
+  rpc GetDeliveryReceipt(DBQuery) returns (File) {}
+  rpc GetDeliveryReceiptAdm(DBQuery) returns (File) {}
+  rpc GetFinishedRouteReceipt(DBQuery) returns (File) {}
+  rpc GetFinishedRouteInvoice(DBQuery) returns (File) {}
+  rpc GetSellsReceipt(DBQuery) returns (File) {}
+  rpc GetSellsInvoice(DBQuery) returns (File) {}
+
+  rpc GetPaymentInfo(PaymentInfoQuery) returns (PaymentInfo) {}
+  rpc UpdatePaymentInfo(PaymentInfo) returns (PaymentInfo) {}
+
+  rpc UpdateCompany(Company) returns (Company) {}
+  rpc GetCompany(Company) returns (Company) {}
+
+  rpc UpdateBatchSellRequest(BatchSellRequest) returns (BatchSellRequest) {}
+  rpc GetBatchSellRequest(BatchSellRequest) returns (BatchSellRequest) {}
+
+  rpc OrderAdmMassEmails(AdmMassEmails) returns (GeneralInfoMessage) {}
+
+  rpc SetSeasonOnOrOff(Name) returns (GeneralInfoMessage) {}
+  rpc GetSeasonOnOrOff(Nothing) returns (Name) {}
+};
+
+message Nothing {
+  string msg = 1;
+};
+
+message GeneralInfoMessage {
+  string content = 1;
+  uint32 code = 2;
+  bool ok = 3;
+};
+
+message VisitIndex {
+  int32 index = 1;
+  string driverName = 2;
+};
+
+message Name {
+  string value = 1;
+};
+
+message County {
+  Name name = 1;
+  repeated string municipalities = 2;
+  GeneralInfoMessage info = 3;
+};
+
+message Counties {
+  repeated County counties = 1;
+  GeneralInfoMessage info = 2;
+};
+
+message Coordinate {
+  double lat = 1;
+  double lng = 2;
+};
+
+message Location {
+  double lat = 1;
+  double lng = 2;
+  int32 place_id = 3;
+  string osm_type = 4;
+  int64  osm_id = 5;
+  string display_name = 6;
+  string lclass = 7;
+  string ltype = 8;
+  double importance = 9;
+  string road = 10;
+  string quarter = 11;
+  string village = 12;
+  string farm = 13;
+  string municipality = 14;
+  string county = 15;
+  string country = 16;
+  string postcode = 17;
+  string name = 18;
+  GeneralInfoMessage info = 19;
+};
+
+message UserContactInfo {
+  string email_address = 1;
+  string phone_number = 2;
+};
+
+message EmailVerificationCode {
+  string email_address = 1;
+  string code = 2;
+};
+
+message User {
+  string location_name = 1;
+  string firstname = 2;
+  string lastname = 3;
+  UserContactInfo contact_info = 4;
+  bool fake = 5;
+  GeneralInfoMessage info = 6;
+  bool is_admin = 7;
+};
+
+message BuyRequest {
+  UserContactInfo contact_info = 1;
+  string name = 2;
+  uint32 current_requirement = 3;
+  int32 reserved_weeks = 4;
+  string reserve_target = 5;
+  uint64 last_calced = 6;
+  bool claimed_by_driver = 7;
+  bool fake = 8;
+  GeneralInfoMessage info = 9;
+};
+
+message SellRequest {
+  UserContactInfo contact_info = 1;
+  string name = 2;
+  uint32 current_capacity = 3;
+  uint32 amount_reserved = 4;
+  uint32 amount_staged = 5;
+  uint32 num_reserved = 6;
+  uint32 num_staged = 7;
+  uint32 prepare_for_pickup = 8;
+  bool fake = 9;
+  GeneralInfoMessage info = 10;
+};
+
+message DriveRequest {
+  UserContactInfo contact_info = 1;
+  string name = 2;
+  bool available = 3;
+  uint32 num_staged_pickups = 4;
+  double available_again_time = 5;
+  bool fake = 6;
+  GeneralInfoMessage info = 7;
+};
+
+message MarketInfo {
+  uint32 num_sellers = 1;
+  uint32 num_buyers = 2;
+  uint32 num_drivers = 3;
+  GeneralInfoMessage info = 4;
+};
+
+message Visit {
+  Location from_loc = 1;
+  Location to_loc = 2;
+  double distance = 3;
+  string type = 4;
+  uint32 loaded_before = 5;
+  uint32 loaded_after = 6;
+  SellRequest sellRequest = 7;
+  DriveRequest driveRequest = 8;
+  BuyRequest buyRequest = 9;
+  User drive_user = 10;
+  string visited = 11;
+  string visited_status = 12;
+  string status = 13;
+  string notification = 14;
+  uint32 return_amount = 15;
+  GeneralInfoMessage info = 16;
+};
+
+message OneSell {
+  int32 reserved_weeks = 1;
+  double last_calced = 2;
+  bool claimed_by_driver = 3;
+  string reserve_target = 4;
+  int32 current_requirement = 5;
+  string name = 6;
+  bool fake = 7;
+  GeneralInfoMessage info = 8;
+};
+
+message SellerDeal {
+  string sellName = 1;
+  SellRequest sellRequest = 2;
+  repeated OneSell sells = 3;
+  int32 number_of_bags_sold = 4;
+  GeneralInfoMessage info = 5;
+};
+
+message Routes {
+  string id = 1;
+  string driveRequestName = 2;
+  string status = 3;
+  double created_UTC = 4;
+  repeated Visit route = 5;
+  repeated SellerDeal deals = 6;
+  double calc_time = 7;
+  bool fake = 8;
+  double updated = 9;
+  double accept_deadline = 10;
+  double due = 11;
+  string wrapup = 12;
+  double finished_time = 13;
+  string finished_time_str = 14;
+  GeneralInfoMessage info = 15;
+};
+
+message RoutesList {
+  repeated Routes routesList = 1;
+};
+
+message VisitProof {
+  bytes img = 1;
+  int32 visitIndex = 2;
+  string driverName = 3;
+  string type = 4;
+  string img_text = 5;
+  double timestamp = 6;
+  GeneralInfoMessage info = 7;
+};
+
+message FeedbackComplaintNondelivery {
+  string buyerEmail = 1;
+  string ongoingRouteIt = 2;
+  GeneralInfoMessage info = 3;
+};
+
+message FeedbackRejectDelivery {
+  string buyerEmail = 1;
+  string notif_id = 2;
+  bool wrongAmount = 3;
+  bool wrongPrice = 4;
+  bool wrongQuality = 5;
+  string customMessage = 6;
+  GeneralInfoMessage info = 7;
+};
+
+message Message {
+  double timestamp = 1;
+  string email = 2;
+  string emailSender = 3;
+  string contentType = 4;
+  double amount = 5;
+  string ref_collection = 6;
+  string ref_id = 7;
+  string text = 8;
+  string status = 9;
+  GeneralInfoMessage info = 10;
+};
+
+message MessageQuery {
+  string receiverEmail = 1;
+  string senderEmail = 2;
+  double from_time = 3;
+  double to_time = 4;
+  repeated uint32 indices = 5;
+  string action = 6;
+  GeneralInfoMessage info = 7;
+};
+
+message Messages {
+  repeated Message messages = 1;
+  GeneralInfoMessage info = 2;
+};
+
+message CompletedDeliveryInfoForBuyer {
+  string email = 1;
+  double time = 2;
+  uint32 amount = 3;
+  string driverEmail = 4;
+  string sellerEmail = 5;
+  string status = 6;
+  double paidAmount = 7;
+  string notifications_id = 8;
+  string deliveries_id = 9;
+  GeneralInfoMessage info = 10;
+};
+
+message AllCompletedDeliveryInfoForBuyer {
+  repeated CompletedDeliveryInfoForBuyer deliveries = 1;
+  GeneralInfoMessage info = 2;
+};
+
+message DBQuery {
+  string object_id = 1;
+  string collection_name = 2;
+  string attribute_name = 3;
+  string attribute_value = 4;
+  uint32 index = 5;
+  GeneralInfoMessage info = 6;
+};
+
+message File {
+  bytes bytes = 1;
+  string media_type = 2;
+  uint64 num_bytes = 3;
+  GeneralInfoMessage info = 4;
+};
+
+message SellerDealInfo {
+  string planned_routes_id = 1;
+  string driverName = 2;
+  string driverEmail = 3;
+  uint32 numBags = 4;
+  double earningEstimate = 5;
+  bool accepted = 6;
+  double calc_time = 7;
+  GeneralInfoMessage info = 8;
+};
+
+message SellerDealAccept {
+  string planned_routes_id = 1;
+  string sellerEmail = 2;
+  bool accept = 3;
+  string reason = 4;
+  GeneralInfoMessage info = 5;
+}
+
+message SellerDealInfoList {
+  repeated SellerDealInfo deals = 1;
+  GeneralInfoMessage info = 2;
+};
+
+message PaymentInfo {
+  string mongodb_id          = 1;
+  string paying_user_email   = 2;
+  string paying_user_phone   = 3;
+  string receiving_user_name = 4;
+  string message_to_payer    = 5;
+  string ref_code            = 6;
+  string ref_collection      = 7;
+  string ref_visit_id        = 8;
+  string ref_route_id        = 9;
+  string status              = 10;
+  float amount_NOK           = 11;
+  float calc_time            = 12;
+  string vipps_order_id      = 13;
+  GeneralInfoMessage info    = 14;
+};
+
+message PaymentInfoQuery {
+  string notification_id = 1;
+  string email = 2;
+};
+
+message Company {
+  UserContactInfo owner = 1;
+  string billname = 2;
+  string accountnum = 3;
+  string companyname = 4;
+  string companynum = 5;
+  string companyaddress = 6;
+  GeneralInfoMessage info = 7;
+};
+
+message BatchSellRequest {
+  UserContactInfo owner = 1;
+  GeneralInfoMessage info = 2;
+};
+
+message AdmMassEmails {
+  string title = 1;
+  string text = 2;
+  bool toBuyers = 3;
+  bool toSellers = 4;
+  bool toDrivers = 5;
+  repeated string emails = 6;
+  GeneralInfoMessage info = 7;
+};
+
+message PriceDefinition {
+  string county = 1;
+  float price = 2;
+  string product = 3;
+  GeneralInfoMessage info = 4;
+};
+
+message AllPrices {
+  repeated PriceDefinition prices = 1;
+  GeneralInfoMessage info = 2;
+};
+
+
+
+
+
+
+
+
+
+

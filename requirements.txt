@@ -1,0 +1,16 @@
+pymongo[srv]
+PyJWT==2.4.0
+haversine
+neo4j==4.3.1
+geopy
+grpcio
+protobuf
+google
+google-auth
+requests
+grpcio-tools
+Pillow
+fpdf2
+opencv-python
+plotly
+requests
